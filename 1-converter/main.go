@@ -18,6 +18,19 @@ func main() {
 
 }
 
+func makeExchangemap() map[string]float64 {
+	var eur_rub float64 = usd_rub / usd_eur
+
+	exchangeMap := make(map[string]float64, 6)
+	exchangeMap["USD_EUR"] = usd_eur
+	exchangeMap["USD_RUB"] = usd_rub
+	exchangeMap["EUR_RUB"] = eur_rub
+	exchangeMap["EUR_USD"] = 1 / usd_eur
+	exchangeMap["RUB_USD"] = 1 / usd_rub
+	exchangeMap["RUB_EUR"] = 1 / eur_rub
+	return exchangeMap
+}
+
 func getInput() (currency_from string, amount float64, currency_to string) {
 	step := 0
 	for {
@@ -90,29 +103,12 @@ func validateAmount(amount float64) (bool, error) {
 }
 
 func calcExchange(currency_from string, amount float64, currency_to string) (float64, error) {
-	var eur_rub float64 = usd_rub / usd_eur
-	switch currency_from {
-	case "USD":
-		switch currency_to {
-		case "RUB":
-			return amount * usd_rub, nil
-		case "EUR":
-			return amount * usd_eur, nil
-		}
-	case "EUR":
-		switch currency_to {
-		case "RUB":
-			return amount * eur_rub, nil
-		case "USD":
-			return amount / usd_eur, nil
-		}
-	case "RUB":
-		switch currency_to {
-		case "USD":
-			return amount / usd_rub, nil
-		case "EUR":
-			return amount / eur_rub, nil
-		}
+	exchangeMap := makeExchangemap()
+	currency_pair := currency_from + "_" + currency_to
+	rate := exchangeMap[currency_pair]
+	if rate == 0 {
+		return 0, errors.ErrUnsupported
+	} else {
+		return rate * amount, nil
 	}
-	return 0, errors.ErrUnsupported
 }
