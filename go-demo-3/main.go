@@ -44,7 +44,7 @@ func printBookmarks(bookmarks bookmarkType) {
 
 }
 
-func addBookmark(bookmarks bookmarkType) bookmarkType {
+func addBookmark(bookmarks bookmarkType) {
 	var newBookmarkKey string
 	var newBookmarkVal string
 	fmt.Println("Введите ключ")
@@ -52,13 +52,11 @@ func addBookmark(bookmarks bookmarkType) bookmarkType {
 	fmt.Println("Введите значение")
 	fmt.Scan(&newBookmarkVal)
 	bookmarks[newBookmarkKey] = newBookmarkVal
-	return bookmarks
 }
 
-func deleteBookmark(bookmarks bookmarkType) bookmarkType {
+func deleteBookmark(bookmarks bookmarkType) {
 	var bookmarkKeyToDelete string
 	fmt.Println("Введите ключ на удаление")
 	fmt.Scan(&bookmarkKeyToDelete)
 	delete(bookmarks, bookmarkKeyToDelete)
-	return bookmarks
 }
