@@ -9,8 +9,10 @@ const usd_eur float64 = 0.88
 const usd_rub float64 = 76.94
 
 func main() {
+	currencyMap := new(map[string]float64)
+	fillExchangemap(currencyMap)
 	currency_from, amount, currency_to := getInput()
-	r, err := calcExchange(currency_from, amount, currency_to)
+	r, err := calcExchange(currency_from, amount, currency_to, currencyMap)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -18,17 +20,15 @@ func main() {
 
 }
 
-func makeExchangemap() map[string]float64 {
+func fillExchangemap(currencyMap *map[string]float64) {
 	var eur_rub float64 = usd_rub / usd_eur
-
-	exchangeMap := make(map[string]float64, 6)
-	exchangeMap["USD_EUR"] = usd_eur
-	exchangeMap["USD_RUB"] = usd_rub
-	exchangeMap["EUR_RUB"] = eur_rub
-	exchangeMap["EUR_USD"] = 1 / usd_eur
-	exchangeMap["RUB_USD"] = 1 / usd_rub
-	exchangeMap["RUB_EUR"] = 1 / eur_rub
-	return exchangeMap
+	*currencyMap = make(map[string]float64)
+	(*currencyMap)["USD_EUR"] = usd_eur
+	(*currencyMap)["USD_RUB"] = usd_rub
+	(*currencyMap)["EUR_RUB"] = eur_rub
+	(*currencyMap)["EUR_USD"] = 1 / usd_eur
+	(*currencyMap)["RUB_USD"] = 1 / usd_rub
+	(*currencyMap)["RUB_EUR"] = 1 / eur_rub
 }
 
 func getInput() (currency_from string, amount float64, currency_to string) {
@@ -102,10 +102,9 @@ func validateAmount(amount float64) (bool, error) {
 	return true, nil
 }
 
-func calcExchange(currency_from string, amount float64, currency_to string) (float64, error) {
-	exchangeMap := makeExchangemap()
+func calcExchange(currency_from string, amount float64, currency_to string, currencyMap *map[string]float64) (float64, error) {
 	currency_pair := currency_from + "_" + currency_to
-	rate := exchangeMap[currency_pair]
+	rate := (*currencyMap)[currency_pair]
 	if rate == 0 {
 		return 0, errors.ErrUnsupported
 	} else {
