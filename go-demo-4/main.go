@@ -4,6 +4,7 @@ import (
 	"demo/password/account"
 	"demo/password/files"
 	"fmt"
+	"reflect"
 )
 
 func main() {
@@ -18,6 +19,8 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	field, _ := reflect.TypeOf(account).Elem().FieldByName("login")
+	fmt.Println(field.Tag)
 	account.OutputPassword()
 	fmt.Println(account)
 }
