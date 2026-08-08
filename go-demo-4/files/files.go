@@ -6,7 +6,12 @@ import (
 )
 
 func ReadFile() {
-
+	data, err := os.ReadFile("test.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(data))
 }
 
 func WriteFile(content string, name string) {
