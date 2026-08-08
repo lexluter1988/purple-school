@@ -1,6 +1,7 @@
 package account
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/rand"
@@ -10,31 +11,35 @@ import (
 
 var letterRunes = []rune("abcdefghijklmnoprstuvwxyzABCDEFGHIJKLMNOPRSTUVWXYZ0123456789-*")
 
-type account struct {
-	login    string `json: "login"`
-	password string
-	url      string
+type Account struct {
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Login     string    `json:"login"`
+	Password  string    `json:"password"`
+	Url       string    `json:"url"`
 }
 
-type accountWtimestamp struct {
-	createdAt time.Time
-	updatedAt time.Time
-	account
+func (acc *Account) OutputPassword() {
+	fmt.Printf("Ваш логин: %s, ваш пароль: %s, ваш URL: %s", acc.Login, acc.Password, acc.Url)
 }
 
-func (acc *account) OutputPassword() {
-	fmt.Printf("Ваш логин: %s, ваш пароль: %s, ваш URL: %s", acc.login, acc.password, acc.url)
+func (acc *Account) ToBytes() ([]byte, error) {
+	file, err := json.Marshal(acc)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
 }
 
-func (acc *account) generatePassword(n int) {
+func (acc *Account) generatePassword(n int) {
 	res := make([]rune, n)
 	for i := range res {
 		res[i] = letterRunes[rand.Intn(len(letterRunes))]
 	}
-	acc.password = string(res)
+	acc.Password = string(res)
 }
 
-func NewAccount(login, password, urlString string) (*accountWtimestamp, error) {
+func NewAccount(login, password, urlString string) (*Account, error) {
 	if login == "" {
 		return nil, errors.New("Неверный login")
 	}
@@ -45,16 +50,14 @@ func NewAccount(login, password, urlString string) (*accountWtimestamp, error) {
 	createdAt := time.Now()
 	updatedAt := time.Now()
 
-	acc := &accountWtimestamp{
-		createdAt: createdAt,
-		updatedAt: updatedAt,
-		account: account{
-			login:    login,
-			url:      urlString,
-			password: password,
-		},
+	acc := &Account{
+		CreatedAt: createdAt,
+		UpdatedAt: updatedAt,
+		Login:     login,
+		Url:       urlString,
+		Password:  password,
 	}
-	if acc.password == "" {
+	if acc.Password == "" {
 		acc.generatePassword(12)
 	}
 	return acc, nil

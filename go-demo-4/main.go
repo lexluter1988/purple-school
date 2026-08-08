@@ -4,12 +4,13 @@ import (
 	"demo/password/account"
 	"demo/password/files"
 	"fmt"
-	"reflect"
 )
 
 func main() {
-	files.WriteFile("Hello files world", "test.txt")
-	files.ReadFile()
+	createAccount()
+}
+
+func createAccount() {
 	login := promptData("Введите логин: ")
 	password := promptData("Введите пароль: ")
 	url := promptData("Введите URL: ")
@@ -19,10 +20,12 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	field, _ := reflect.TypeOf(account).Elem().FieldByName("login")
-	fmt.Println(field.Tag)
-	account.OutputPassword()
-	fmt.Println(account)
+	file, err := account.ToBytes()
+	if err != nil {
+		fmt.Println("Unable to marshal")
+		return
+	}
+	files.WriteFile(file, "test.txt")
 }
 
 func promptData(prompt string) string {
